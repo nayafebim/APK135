@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:lab_crude/show_product.dart';
+import 'package:febimphone/show_product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -18,8 +18,8 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _email =
-      TextEditingController(text: "tamm@abc.com");
-  final TextEditingController _password = TextEditingController(text: "123456");
+      TextEditingController(text: "knxakn@gmail.com");
+  final TextEditingController _password = TextEditingController(text: "4567");
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
 
               // Define your http laravel API location
               var url = Uri.parse(
-                  'https://642021136.pungpingcoding.online/api/login');
+                  'https://642021135.pungpingcoding.online/api/login');
 
               // Request by POST Method
               var response = await http.post(

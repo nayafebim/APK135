@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:lab_crude/product_model.dart';
+import 'package:febimphone/product_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowProduct extends StatefulWidget {
@@ -29,7 +29,7 @@ class _ShowProductPageState extends State<ShowProduct> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Define your http laravel API location
-    var url = Uri.parse('https://642021136.pungpingcoding.online/api/porducts');
+    var url = Uri.parse('https://642021135.pungpingcoding.online/api/porducts');
     var response = await http.get(
       url,
       headers: {
@@ -208,22 +208,104 @@ class _ShowProductPageState extends State<ShowProduct> {
   }
 
   Future<void> deleteProduct(int? id) async {
-    // Call SharedPreference to get Token
+    // เรียกใช้ SharedPreference เพื่อรับ Token
+    SharedPreferences prefs = await _prefs;
 
-    // Define Laravel API for Deleting Produce
+    // กำหนด URL ของ Laravel API สำหรับการลบสินค้า
+    var url =
+        Uri.parse('https://642021135.pungpingcoding.online/api/products/$id');
 
-    // Request deleting product
+    // ส่งคำขอลบสินค้า
+    var response = await http.delete(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: "Bearer ${prefs.getString("token")}"
+      },
+    );
 
-    // Check Status Code, then pop to the previous
+    // ตรวจสอบสถานะโค้ด
+    if (response.statusCode == 200) {
+      // ลบสินค้าสำเร็จ, คุณอาจต้องการจัดการเพิ่มเติมตามต้องการ
+      print("ลบสินค้าสำเร็จ");
+
+      // ย้อนกลับไปยังหน้าที่แล้วหรือดำเนินการอื่นๆตามต้องการ
+      Navigator.pop(context);
+    } else {
+      // เกิดข้อผิดพลาดในการลบสินค้า, คุณอาจต้องการจัดการเพิ่มเติมตามต้องการ
+      print("เกิดข้อผิดพลาดในการลบสินค้า - สถานะโค้ด: ${response.statusCode}");
+
+      // คุณสามารถแสดงข้อความผิดพลาดหรือการแจ้งเตือนได้ตามต้องการ
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('ข้อผิดพลาด'),
+            content: Text('ไม่สามารถลบสินค้าได้ กรุณาลองอีกครั้ง'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('ตกลง'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> logout() async {
-    // Call SharedPreference to get Token
+    // เรียกใช้ SharedPreference เพื่อรับ Token
+    SharedPreferences prefs = await _prefs;
 
-    // Define Laravel API for Logout
+    // กำหนด URL ของ Laravel API สำหรับการออกจากระบบ (Logout)
+    var url = Uri.parse('https://642021135.pungpingcoding.online/api/logout');
 
-    // Request for logging out
+    // ส่งคำขอออกจากระบบ
+    var response = await http.post(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: "Bearer ${prefs.getString("token")}"
+      },
+    );
 
-    // Check Status Code, remove sharedpreference, then pop to the previous
+    // ตรวจสอบสถานะโค้ด
+    if (response.statusCode == 200) {
+      // ออกจากระบบสำเร็จ, คุณอาจต้องการจัดการเพิ่มเติมตามต้องการ
+
+      // ลบ Token ที่เก็บไว้ใน SharedPreferences
+      await prefs.remove("token");
+
+      // ย้อนกลับไปยังหน้าที่แล้วหรือดำเนินการอื่นๆตามต้องการ
+      Navigator.pop(context);
+    } else {
+      // เกิดข้อผิดพลาดในการออกจากระบบ, คุณอาจต้องการจัดการเพิ่มเติมตามต้องการ
+      print(
+          "เกิดข้อผิดพลาดในการออกจากระบบ - สถานะโค้ด: ${response.statusCode}");
+
+      // คุณสามารถแสดงข้อความผิดพลาดหรือการแจ้งเตือนได้ตามต้องการ
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('ข้อผิดพลาด'),
+            content: Text('ไม่สามารถออกจากระบบได้ กรุณาลองอีกครั้ง'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('ตกลง'),
+              )
+            ],
+          );
+        },
+      );
+    }
   }
 }
